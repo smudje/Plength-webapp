@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Plength</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='jquery.Jcrop.min.css') }}">
+  <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='jquery.color.js') }}"></script>
+  <script src="{{ url_for('static', filename='jquery.Jcrop.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+        <div class="col-md-12">
+          <h4>Image Upload</h4>
+          <hr>
+        </div>
+      </div>
+    <div class="row">
+      <div class="col-md-6">
+        <input class="btn btn-default" type="file" id="files"/>
+      </div>
+      <div class="col-md-6">
+        <p id="imageStats"></p>
+      </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+          <img id="image" alt="Uploaded Image" style='border:1px solid #000000'/>
+        </div>
+    </div>
+  </div>
+</body>
+</html> 
+
+<script>
+  document.getElementById("files").onchange = function () {
+      var reader = new FileReader();
+
+      reader.onload = function (e) {
+          // get loaded data and render thumbnail.
+          var imageBox = document.getElementById("image");
+          imageBox.src = e.target.result;
+          
+          // Show Image Stats
+          $('#imageStats').html(`<p>Image Dimensions: ${imageBox.clientWidth}px x ${imageBox.clientHeight}px </p>`);
+      };
+
+      // read the image file as a data URL.
+      reader.readAsDataURL(this.files[0]);
+  };
+</script>
