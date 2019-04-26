@@ -36,12 +36,29 @@
       </div>
       <div class="col-md-9">
         <label>Hue: <input type=range id=rHue max=359 value=0></label>
-        <label>Saturation: <input type=range id=rSat value=100></label>
+        <label>Saturation: <input type=range id=rSat value=0></label>
         <label>Lightness: <input type=range id=rL max=200 value=100></label>
-        <label>Use "color" instead: <input type=checkbox id=cColor></label>
       </div>
+    </div>
+    <div class="row" style="padding-top: 10px;">
+      <div class="col-md-3">
+        <input type="radio" name="plant" value="Coleoptile" checked>Coleoptile<br>
+        <input type="radio" name="plant" value="Seedling">Seedling<br>
+      </div>
+      <div class="col-md-3">
+          <input type="radio" name="calPos" value="left" checked>Left<br>
+          <input type="radio" name="calPos" value="right">Right<br>
+      </div>
+      <div class="col-md-3">
+          Known Distance: <input type="number" name="fname"> mm<br>
+      </div>
+      <div class="col-md-3">
+          Min Detection Distance: <input type="number" name="fname"> pixels<br>
+      </div>
+    </div>
+    <div class="row" style="padding-top: 10px;">
       <div class="col-md-1">
-        <button onclick="uploadImage()">Upload</button>
+          <button onclick="uploadImage()">Upload</button>
       </div>
     </div>
   </div>
@@ -56,11 +73,30 @@
   var canvas;
   var context;
   var image;
+  var hue = 200;
+  var sat = 0;
+  var lightness= 100;
 
   var prefsize;
 
   $("#file").change(function() {
     loadImage(this);
+  });
+
+  $('input[type=range]').on('input', function () {
+    $(this).trigger('change');
+  });
+
+  $('#rHue').change( function() { 
+    setHue()
+  });
+
+  $('#rSat').change( function() { 
+    setSaturation();
+  });
+
+  $('#rL').change( function() { 
+    setLightness();
   });
 
   function loadImage(input) {
@@ -94,7 +130,9 @@
     context = canvas.getContext("2d");
     canvas.width = image.width;
     canvas.height = image.height;
+    context.globalCompositeOperation = "source-over";
     context.drawImage(image, 0, 0);
+    setHue(); setSaturation(); setLightness();
     $("#canvas").Jcrop({
       onSelect: selectcanvas,
       onRelease: clearcanvas,
@@ -138,25 +176,59 @@
       return;
   };
 
+  function setHue() {
+    hue = $('#rHue').val();
+    console.log('Hue value = ' + hue); 
+    context.globalCompositeOperation = "hue";
+    context.fillStyle = `hsl(${hue}, ${sat}%, 50%)`;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    resetComposition();
+  }
 
+  function setSaturation() {
+    sat = $('#rSat').val();
+    console.log('Saturation value = ' + sat); 
+    context.globalCompositeOperation = "saturation";
+    context.fillStyle = `hsl(${hue}, ${sat}%, 50%)`;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    resetComposition();
+  }
+
+  function setLightness() {
+    lightness = $('#rL').val();
+    context.globalCompositeOperation = lightness < 100 ? "color-burn" : "color-dodge";
+    lightness = (lightness >= 100) ? lightness - 100 : 100 - (100 - lightness);
+    console.log('Lightness value = ' + lightness); 
+    context.fillStyle = `hsl(${hue}, ${sat}%, ${lightness}%)`;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    resetComposition();
+  }
+
+  function resetComposition() {
+    context.globalCompositeOperation = "destination-in";
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    context.globalCompositeOperation = "source-over";
+  }
 
   function uploadImage() {
-    var croppedImage = canvas.toDataURL();
-    var outputImage = croppedImage.replace(/^data:image\/(png|jpg);base64,/, "");
-    $.ajax({
-      url: "/uploadImage",
-      type: "POST",
-      data: outputImage,
-      contentType: false,
-      cache: false,
-      processData: false,
-      success: function(data) {
-        console.log('Success: ' + data);
-      },
-      error: function(data) {
-        console.log('Error: ' + data);
-      },
-      complete: function(data) {}
-    });
-  };
+    if (canvas != null) {
+      var croppedImage = canvas.toDataURL();
+      var outputImage = croppedImage.replace(/^data:image\/(png|jpg);base64,/, "");
+      $.ajax({
+        url: "/uploadImage",
+        type: "POST",
+        data: outputImage,
+        contentType: false,
+        cache: false,
+        processData: false,
+        success: function(data) {
+          console.log('Success: ' + data);
+        },
+        error: function(data) {
+          console.log('Error: ' + data);
+        },
+        complete: function(data) {}
+      });
+    }
+  }      
 </script>
