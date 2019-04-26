@@ -27,20 +27,25 @@
         <p id="imageStats"></p>
       </div>
     </div>
-    <form id="form" method="POST" enctype="multipart/form-data">
-      <div class="row" style="padding-top: 10px;">
-        <div class="col-md-12" id="views"></div>
+    <div class="row" style="padding-top: 10px;">
+      <div class="col-md-12" id="views"></div>
+    </div>
+    <div class="row" style="padding-top: 10px;">
+      <div class="col-md-2">
+        <button onclick="cropImage()">Crop Image</button>
       </div>
-      <div class="row" style="padding-top: 10px;">
-        <div class="col-md-2">
-          <button id="cropbutton">Crop Image</button>
-        </div>
-        <div class="col-md-1">
-          <!-- <input type="submit" value="Upload"/> -->
-        </div>
+      <div class="col-md-9">
+        <label>Hue: <input type=range id=rHue max=359 value=0></label>
+        <label>Saturation: <input type=range id=rSat value=100></label>
+        <label>Lightness: <input type=range id=rL max=200 value=100></label>
+        <label>Use "color" instead: <input type=checkbox id=cColor></label>
       </div>
-    </form>
+      <div class="col-md-1">
+        <button onclick="uploadImage()">Upload</button>
+      </div>
+    </div>
   </div>
+  <div id="temp"></div>
 </body>
 </html> 
 
@@ -77,31 +82,6 @@
       image.onload = restartJcrop;
       image.src = canvas.toDataURL('image/png');
     } else restartJcrop();
-  }
-
-  function dataURLtoBlob(dataURL) {
-    var BASE64_MARKER = ';base64,';
-    if (dataURL.indexOf(BASE64_MARKER) == -1) {
-      var parts = dataURL.split(',');
-      var contentType = parts[0].split(':')[1];
-      var raw = decodeURIComponent(parts[1]);
-
-      return new Blob([raw], {
-        type: contentType
-      });
-    }
-    var parts = dataURL.split(BASE64_MARKER);
-    var contentType = parts[0].split(':')[1];
-    var raw = window.atob(parts[1]);
-    var rawLength = raw.length;
-    var uInt8Array = new Uint8Array(rawLength);
-    for (var i = 0; i < rawLength; ++i) {
-      uInt8Array[i] = raw.charCodeAt(i);
-    }
-
-    return new Blob([uInt8Array], {
-      type: contentType
-    });
   }
 
   function restartJcrop() {
@@ -151,30 +131,32 @@
     validateImage();
   }
 
-  $("#cropbutton").click(function(e) {
+  function cropImage() {
     if (image != null)
       applyCrop();
-  });
+    else
+      return;
+  };
 
-  $("#form").submit(function(e) {
-    e.preventDefault();
-    // formData = new FormData($(this)[0]);
-    // var blob = dataURLtoBlob(canvas.toDataURL('image/jpg'));
-    // formData.append("cropped_image[]", blob);
-    // $.ajax({
-    //   url: "/uploadImage",
-    //   type: "POST",
-    //   data: formData,
-    //   contentType: false,
-    //   cache: false,
-    //   processData: false,
-    //   success: function(data) {
-    //     alert("Success");
-    //   },
-    //   error: function(data) {
-    //     alert("Error");
-    //   },
-    //   complete: function(data) {}
-    // });
-  });
+
+
+  function uploadImage() {
+    var croppedImage = canvas.toDataURL();
+    var outputImage = croppedImage.replace(/^data:image\/(png|jpg);base64,/, "");
+    $.ajax({
+      url: "/uploadImage",
+      type: "POST",
+      data: outputImage,
+      contentType: false,
+      cache: false,
+      processData: false,
+      success: function(data) {
+        console.log('Success: ' + data);
+      },
+      error: function(data) {
+        console.log('Error: ' + data);
+      },
+      complete: function(data) {}
+    });
+  };
 </script>

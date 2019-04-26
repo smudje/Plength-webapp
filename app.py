@@ -3,9 +3,12 @@ from flask import (
   Flask,
   render_template,
   flash,
-  request
+  request,
+  jsonify
 )
 from werkzeug.utils import secure_filename
+import base64
+import os 
 
 app = Flask(__name__)
 app.secret_key = 'Plength'
@@ -22,15 +25,10 @@ def allowed_file(filename):
 
 @app.route('/uploadImage', methods=['GET', 'POST'])
 def upload_file():
-    if request.method == 'POST':
-        if 'file' not in request.files:
-            flash('No file part')
-            return 'No file part'
-        file = request.files['file']
-        if file.filename == '':
-            flash('No selected file')
-            return 'Py Error'
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(UPLOAD_FOLDER, filename))
-            return 'File saved'
+  # app.logger.debug(request.data)
+  f = open("imgData.txt", "wb")
+  f.write(request.data)
+  f.close()
+  #app.logger.debug(request.method)
+  with open("imageToSave.png", "wb") as fh:
+    fh.write(base64.decodebytes(request.data))
