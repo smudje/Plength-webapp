@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Plength-Insructions</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <style>
+        .bg-1 { 
+          background-color: #004b17; /* Green */
+          color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-1">
+    <div class="container text-center">
+        <h1>PLENGTH</h1>
+        <h3>Lab of Plant Growth Analysis</h3>
+    </div>
+</div>
+<div class="container-fluid bg-2">
+        <h3>Instructions</h3>
+        <h4>General</h4>
+        <p>Steps:
+                <br>1. Upload a scanned image of coleoptiles or seedlings on a plate. For optimum performance, the following conditions are recommended:
+                <br>• A black background for coleoptiles or a blue background for seedlings
+                <br>• The plate contains no scratches and smudges; ideally it would also be gridless
+                <br>• No overlapping plants
+                <br>• The calibrator is a white strip of known length placed on either the lower right or left corner of the plate
+                <br>• No plant is in the same grid box as the calibrator (~3cm for gridless plates)
+                
+                <br> 2. Crop the plate borders and surrounding areas.
+                
+                <br>3. For seedlings, check if your plants are being detected using the Threshold button. Adjust values accordingly.
+                
+                <br>4. Check the settings to see that the plant type being analyzed and calibrator position and length are correct.5. Run the program. Each detected region will be labeled with a red bounding box and a number. In case of seedlings, yellow lines are drawn over the branch determined to be a leaf. This could be incorrect if the leaf is too close to the main stem.
+                
+                <br>6. Merge, remove, select, or group regions as necessary. The labeled image can be exported to see the numberings more clearly.The mean, standard deviation, and standard error will be recalculated for each parameter.
+                
+                <br>7. Export to a csv file.</p>
+
+            <h4>Settings</h4>
+            <p>THRESHOLDING
+                <br> This option is only available for seedling analysis, since the threshold is based on color. (The threshold used in coleoptile analysis is black and white). There are three parameters - hue, saturation, and value - and each has two sliders for their lower and upper limit.
+                    
+                    Hue is the color. The default value of 0 to 95 encompasses red, orange and green.
+                    
+            <br>SATURATION
+            <br> Saturation is the intensity of color. Zero means no color (i.e. gray or black) and 255 is intense color. The default value was set to 0.
+                    
+                    Value is the brightness of the color. Like saturation, zero is also black. The default value was also set to 0. </p>
+                <h4> Miscelaneous</h4>
+                <p> SELECTING AND REMOVING
+                        Type the number(s) of plant(s) you want to select or remove in the entry box. Separate the numbers with a comma (no space in between). A range of numbers will also be accepted. For example, to remove plants number 1, 4, 5, 6, and 10, type "1,4-6,10" and click "Remove." Selection and removing can be done after grouping, and the statistics will be recalculated accordingly.
+                        
+                        <br> MERGING
+                        <br>Type the numbers of two or more plants to be merged in the entry box, e.g. "4+17" will merge plants 4 and 17. Separate each merging with a comma (no space in between). Merging can only happen once, so first typing "4+17" then "4+17+23" will not work - to merge three plants you have to include all the numbers at once. Only plants from the same group can be merged.
+                        
+                        Merging leaf values is a little more complicated. You will have to use the letter "l" to indicate the leaf, followed by the leaf number. (Leaves are numbered from bottom to top.) For instance, if the second leaf of plant 4 was cut off and the stray leaf was numbered as 8, you have to type "4l2+8" to merge them. Always make sure that the main plant is the first value (i.e. before the plus sign).
+                        
+                        <br> GROUPING
+                        <br> While in grouping mode, type asterisks (*) in a new line to separate the plants into groups. You can shift the rows around (Ctrl+X then Ctrl+V) and even remove them during grouping. Click "Apply" to create the groups, and the statistics will be calculated for each group. If you wish to ungroup them, go into the grouping mode, remove the group heading(s), then apply.</p>
+            </div>
+    
+      
+      
+
+</body>
+</html
