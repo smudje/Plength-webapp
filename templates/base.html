@@ -10,17 +10,131 @@
   <script src="{{ url_for('static', filename='jquery.color.js') }}"></script>
   <script src="{{ url_for('static', filename='jquery.Jcrop.min.js') }}"></script>
   <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+  <style>
+      .jumbotron { 
+        background-color: #072c02f1; /* Green */
+        color: #ffffff;
+      }
+      .navbar {
+    margin-bottom: 0;
+    background-color: #1e351e;
+    z-index: 9999;
+    border: 0;
+    font-size: 12px !important;
+    line-height: 1.42857143 !important;
+    letter-spacing: 4px;
+    border-radius: 0;
+  }
+  .navbar li a, .navbar .navbar-brand {
+    color: #fff !important;
+  }
+  .navbar-nav li a:hover, .navbar-nav li.active a {
+    color: #0c6301f1 !important;
+    background-color: #fff !important;
+  }
+  .navbar-default .navbar-toggle {
+    border-color: transparent;
+    color: #fff !important;
+  }
+  @media screen and (max-width: 768px) {
+    .col-sm-4 {
+      text-align: center;
+      margin: 25px 0;
+    }
+      </style>
 </head>
 <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="#myPage">Logo</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#about">ABOUT</a></li>
+        <li><a href="#detailedinstructions">DETAILED INSTRUCTIONS</a></li>
+        <li><a href="#analysis">ANALYSIS</a></li>
+        <li><a href="#contact">CONTACT</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
   <div class="container">
     <div class="row">
-        <div class="col-md-12">
-          <h4>Image Upload</h4>
+            <div class="container text-center">
+                <div class="jumbotron">
+          <h2><dt>PLENGTH</dt></h2>
+          <img-right src="Lab_img.jpg" class="img-circle" alt="Lab">
+                </div>
           <hr>
         </div>
       </div>
+      <!-- Container (About Section) -->
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-8">
+      <h3 id="about">About</h3>      
+      <p>PLENGTH is a.... </p>
+    </div>
+  </div>
+</div>
+
+<!-- Container (Detailed Insructions Section) -->
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-8">
+      <h3 id= "detailedinstructions">Detailed Instructions</h3>      
+      <p>This program works by converting a plant to a graph, with branching points and end points as nodes. It works on both rice coleoptiles and seedlings. Anything shorter than 2mm will be considered as noise and removed.<br>
+
+      <dt>Steps:</dt><br>
+1. Upload a scanned image of coleoptiles or seedlings on a plate. For optimum performance, the following conditions are recommended:<br>
+• A black background for coleoptiles or a blue background for seedlings<br>
+• The plate contains no scratches and smudges; ideally it would also be gridless<br>
+• No overlapping plants<br>
+• The calibrator is a white strip of known length placed on either the lower right or left corner of the plate<br>
+• No plant is in the same grid box as the calibrator (~3cm for gridless plates)<br>
+
+2. Crop the plate borders and surrounding areas.<br>
+
+3. For seedlings, check if your plants are being detected using the Threshold button. Adjust values accordingly.<br>
+
+4. Check the settings to see that the plant type being analyzed and calibrator position and length are correct.5. Run the program. Each detected region will be labeled with a red bounding box and a number. In case of seedlings, yellow lines are drawn over the branch determined to be a leaf. This could be incorrect if the leaf is too close to the main stem.<br>
+
+6. Merge, remove, select, or group regions as necessary. The labeled image can be exported to see the numberings more clearly.The mean, standard deviation, and standard error will be recalculated for each parameter.<br>
+
+7. Export to a csv file.<br>
+<br>
+<dt>SELECTING AND REMOVING</dt>
+Type the number(s) of plant(s) you want to select or remove in the entry box. Separate the numbers with a comma (no space in between). A range of numbers will also be accepted. For example, to remove plants number 1, 4, 5, 6, and 10, type "1,4-6,10" and click "Remove." Selection and removing can be done after grouping, and the statistics will be recalculated accordingly.<br>
+
+<dt>MERGING</dt>
+Type the numbers of two or more plants to be merged in the entry box, e.g. "4+17" will merge plants 4 and 17. Separate each merging with a comma (no space in between). Merging can only happen once, so first typing "4+17" then "4+17+23" will not work - to merge three plants you have to include all the numbers at once. Only plants from the same group can be merged.<br>
+
+Merging leaf values is a little more complicated. You will have to use the letter "l" to indicate the leaf, followed by the leaf number. (Leaves are numbered from bottom to top.) For instance, if the second leaf of plant 4 was cut off and the stray leaf was numbered as 8, you have to type "4l2+8" to merge them. Always make sure that the main plant is the first value (i.e. before the plus sign). <br>
+
+<dt>GROUPING</dt>
+While in grouping mode, type asterisks (*) in a new line to separate the plants into groups. You can shift the rows around (Ctrl+X then Ctrl+V) and even remove them during grouping. Click "Apply" to create the groups, and the statistics will be calculated for each group. If you wish to ungroup them, go into the grouping mode, remove the group heading(s), then apply. </p>
+    </div>
+  </div>
+</div>
+   
+<!-- Container (Analysis Section) -->
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-8">
+      <h3 id= "analysis">Analysis</h3> 
+    </div>
+  </div>
+</div>
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-12">   
+        <h5 class="text-left"><dt>Step I: Choose the image that needs to be analyzed by clicking the button</dt></h5>
         <input class="btn btn-default" type="file" id="file"/>
       </div>
       <div class="col-md-6">
@@ -31,38 +145,54 @@
       <div class="col-md-12" id="views"></div>
     </div>
     <div class="row" style="padding-top: 10px;">
-      <div class="col-md-2">
+      <div class="col-md-12">
+          <h5 class="text-left"><dt>Step II: Select the area to be analysed and click the button to crop accordingly</dt></h5>
         <button onclick="cropImage()">Crop Image</button>
       </div>
-      <div class="col-md-9">
+      <div class="col-md-8">
+        <br>
+        <h5 class="text-left"><dt>Step III: edit the image using the slide button to obtain desired contrast level<br><small>Not required for coleoptile (May be required for seedling)</small></dt></h5>
         <label>Hue: <input type=range id=rHue max=359 value=0></label>
         <label>Saturation: <input type=range id=rSat value=0></label>
         <label>Lightness: <input type=range id=rL max=200 value=100></label>
       </div>
     </div>
     <div class="row" style="padding-top: 10px;">
-      <div class="col-md-3">
-        <input type="radio" name="plant" value="Coleoptile" checked>Coleoptile<br>
-        <input type="radio" name="plant" value="Seedling">Seedling<br>
-      </div>
-      <div class="col-md-3">
-          <input type="radio" name="calPos" value="left" checked>Left<br>
-          <input type="radio" name="calPos" value="right">Right<br>
-      </div>
-      <div class="col-md-3">
-          Known Distance: <input type="number" name="fname"> mm<br>
-      </div>
-      <div class="col-md-3">
-          Min Detection Distance: <input type="number" name="fname"> pixels<br>
-      </div>
-    </div>
-    <div class="row" style="padding-top: 10px;">
-      <div class="col-md-1">
+      <div class="col-md-8">
+  <br>
+        <h5 class="text-left"><dt>Step IV: Choose the plant type being analysed and the marker position<br><small>Known distance:marker length; Min Detection distance: 500 (std)</small></dt></h5>
+        <div class="row" style="padding-top: 10px;">
+            <div class="col-md-3">
+              <input type="radio" name="plant" value="Coleoptile" checked>Coleoptile<br>
+              <input type="radio" name="plant" value="Seedling">Seedling<br>
+            </div>
+            <div class="col-md-3">
+                <input type="radio" name="calPos" value="left" checked>Marker Left<br>
+                <input type="radio" name="calPos" value="right">Marker Right<br>
+            </div>
+            <div class="col-md-3">
+                Known Distance: <input type="number" name="fname"> mm<br>
+            </div>
+            <div class="col-md-3">
+                Min Detection Distance: <input type="number" name="fname"> pixels<br>
+            </div>
+          </div>
+          <br>
+          <h5 class="text-left"><dt>Step V: Click the button to upload and analyze the image</dt></h5>
           <button onclick="uploadImage()">Upload</button>
       </div>
     </div>
   </div>
   <div id="temp"></div>
+  <!-- Container (CONTACT Section) -->
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-8">
+      <h3 id= "contact">Contact</h3> 
+      <h5>For any queries or to report any bugs please send an email to the following address: <br><br> smj2096@gmail.com </h5>
+    </div>
+  </div>
+</div>
 </body>
 </html> 
 
@@ -231,4 +361,4 @@
       });
     }
   }      
-</script>
+</script>}
