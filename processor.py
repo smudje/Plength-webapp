@@ -41,12 +41,13 @@ class Processor:
         
         self.plant = "coleoptile"
         
-    def setfile(self, filepath):
+    def setfile(self, filepath, filename):
         '''Opens file dialog, gets the file directory, and shows the image'''
         
                 
         # More initialization
         self.filepath = filepath
+        self.filename = filename
         self.img = cv2.imread(filepath)
         self.showImg(self.img)
         self.height, self.width, _ = self.img.shape
@@ -306,6 +307,8 @@ class Processor:
         
         # Checkpoint
         self.analyzed = True
+
+        return True
         
     def distanceWiki(self, P1, P2, P3):
         '''Returns the distance between point P3 and line containing points P1, P2'''
@@ -746,14 +749,14 @@ class Processor:
 
     def showImg(self, load):
         '''Saves the image'''
-        cv2.imwrite("uploads/final.png", load)
+        cv2.imwrite("uploads/F_" + self.filename + ".png", load)
         #fh = open("uploads/final.png", "wb")
         #fh.write(load)
     
     def flushResults(self):
         #fh = open("uploads/final.png", "w")
         #fh.write(self.results)
-        with open('uploads/final.json', 'w') as file:
+        with open("uploads/" + self.filename + ".json", "w") as file:
             file.write(json.dumps(self.results))
         
         
