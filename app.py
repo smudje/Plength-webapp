@@ -11,6 +11,7 @@ import base64
 import os
 import random
 import string
+from processor import Processor
 
 app = Flask(__name__)
 app.secret_key = 'Plength'
@@ -39,3 +40,11 @@ def upload_file():
     filename = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
     with open(UPLOAD_FOLDER + filename + ".png", "wb") as fh:
       fh.write(base64.decodebytes(request.data))
+
+   
+@app.route('/test', methods=['GET', 'POST'])
+def test_analyze():
+  prcsr = Processor()
+  prcsr.setfile("uploads\XVMPSA.png")
+  prcsr.analyze()
+  return prcsr.test()
