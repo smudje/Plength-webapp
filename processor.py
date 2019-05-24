@@ -40,6 +40,8 @@ class Processor:
         self.side = "left"
         
         self.plant = "coleoptile"
+
+        self.progress = 0
         
     def setfile(self, filepath, filename):
         '''Opens file dialog, gets the file directory, and shows the image'''
@@ -52,7 +54,13 @@ class Processor:
         self.showImg(self.img)
         self.height, self.width, _ = self.img.shape
         
-    def analyze(self):
+    def analyze(self, plant, side, c_entry, min_area):
+
+        self.plant = plant
+        self.side = side
+        self.c_entry = c_entry
+        self.min_area = min_area
+
         '''Does image analysis on the file and outputs the lengths'''
 
         self.overlay = self.img.copy()
@@ -289,8 +297,10 @@ class Processor:
             all_results.append(temp_results)
             
             # Progress bar :) (look at terminal)
-            print('#'*(int(cc/progress*30)-int((cc-1)/progress*30)), end='')
-            stdout.flush()
+            #print('#'*(int(cc/progress*30)-int((cc-1)/progress*30)), end='')
+            #stdout.flush()
+
+            self.progress = (cc/progress)*100
         
         print()
         
@@ -303,12 +313,18 @@ class Processor:
         temp = cv2.merge((r,g,b))
         #temp = Image.fromarray(temp)
         self.showImg(temp)
-        self.flushResults()
+        #self.flushResults()
         
         # Checkpoint
         self.analyzed = True
 
-        return True
+        return True,self.results
+
+    def getProgress(self):
+        return self.progress
+
+    def getData(self):
+        return self.results
         
     def distanceWiki(self, P1, P2, P3):
         '''Returns the distance between point P3 and line containing points P1, P2'''
