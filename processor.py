@@ -413,16 +413,16 @@ class Processor:
                     self.results[i+1] = self.results.pop(keys[i])
                     keys = sorted(self.results.keys())
     
-    def mergeRegions(self):
+    def mergeRegions(self, regions):
         '''Merges two or more regions together'''
         # Get text and clear entry box
-        merge_text = self.e3.get()
-        self.e3.delete(0, END)
+        # merge_text = self.e3.get()
+        # self.e3.delete(0, END)
         
-        if not merge_text or self.grouping:
+        if not regions:
             return None
         
-        merge_list = merge_text.split(',')
+        merge_list = regions.split(',')
         
         # For each merging
         for element in merge_list:
@@ -485,16 +485,17 @@ class Processor:
         self.calcStatistics()
         self.showText()   
         
-    def selectRegions(self):
+    def selectRegions(self, regions):
         '''Select only certain regions and removes the rest'''
-        select_text = self.e3.get()
-        self.e3.delete(0, END)          # Clear entry box
+        # select_text = self.e3.get()
+        # self.e3.delete(0, END)          # Clear entry box
         
-        if not select_text or self.grouping:
+        if not regions:
             return None
 
         # Initialization
-        select_list = select_text.split(',')
+        # select_list = select_text.split(',')
+        select_list = regions.split(',')
         pos_list, select_list_new = [],[]
 
         # This is if the user enters a range, i.e. 4-9
@@ -524,17 +525,17 @@ class Processor:
         self.showText()        
 
     
-    def removeRegions(self):
+    def removeRegions(self, regions):
         '''Removes one or more region'''
         # Get text from entry box and remove values
-        remove_text = self.e3.get()
-        self.e3.delete(0, END)
+        # remove_text = self.e3.get()
+        # self.e3.delete(0, END)
         
-        if not remove_text or self.grouping:
+        if not regions:
             return None
         
         # Initialization
-        remove_list = remove_text.split(',')
+        remove_list = regions.split(',')
         pos_list, remove_list_new = [],[]
         
         # This is if the user enters a range, i.e. 4-9

@@ -82,6 +82,30 @@ def analyze(path, filename, plantType, side, minDist, dist):
 @app.route('/getData', methods=['GET', 'POST'])
 def getData():
   return jsonify(data=prcsr.getData())
+
+@app.route('/getSelect', methods=['GET', 'POST'])
+def getSelect():
+  if request.data is None:
+    return None
+  else:
+    prcsr.selectRegions(request.form['regions'])
+    return jsonify(success=True)
+
+@app.route('/getRemove', methods=['GET', 'POST'])
+def getRemove():
+  if request.data is None:
+    return None
+  else:
+    prcsr.removeRegions(request.form['regions'])
+    return jsonify(success=True)
+   
+@app.route('/getMerge', methods=['GET', 'POST'])
+def getMerge():
+  if request.data is None:
+    return None
+  else:
+    prcsr.mergeRegions(request.form['regions'])
+    return jsonify(success=True)
    
 @app.route('/pollProgress', methods=['GET', 'POST'])
 def pollProgress():

@@ -180,6 +180,19 @@
     </div>
     <div class="row" style="padding-top: 10px;">
       <div class="col-md-12" id="views"></div>
+      <div class="col-md-12" id="data"></div>
+    </div>
+    <div id="updateBlock" class="row" style="padding-top: 10px;display: none">
+      <div class="col-md-6" id="modifier">
+        <div class="row">
+          <div class="col-md-6"><input type="text" id="update"></div>
+          <div class="col-md-6">
+            <input type="button" value="Select" onclick="getSelect()">
+            <input type="button" value="Merge" onclick="getMerge()">
+            <input type="button" value="Remove" onclick="getRemove()">
+          </div>
+        </div>
+      </div>
     </div>
     <div class="row" style="padding-top: 10px;">
       <div class="col-md-12">
@@ -464,7 +477,61 @@
     });
   }
 
+  function getSelect() {
+    var regions = $('#update').val();
+
+    if (regions == '') return;
+
+    $.ajax({
+      url: "/getSelect",
+      type: "POST",
+      data : {
+        regions: regions
+      },
+      success: function (data) {
+        getData();
+      },
+    });
+  }
+
+  function getRemove() {
+    var regions = $('#update').val();
+
+    if (regions == '') return;
+
+    $.ajax({
+      url: "/getRemove",
+      type: "POST",
+      data : {
+        regions: regions
+      },
+      success: function (data) {
+        getData();
+      },
+    });
+  }
+
+  function getMerge() {
+    var regions = $('#update').val();
+
+    if (regions == '') return;
+
+    $.ajax({
+      url: "/getMerge",
+      type: "POST",
+      data : {
+        regions: regions
+      },
+      success: function (data) {
+        getData();
+      },
+    });
+  }
+
   function getData() {
+    $('#update').val('');
+    $("#updateBlock").show();
+
     $.ajax({
       url: "/getData",
       type: "GET",
@@ -472,16 +539,18 @@
       success: function (data) {
         var temp = data.data['1'];
         var summary = `<br><br>
-                       <p>Mean: ${temp.lengthmean} mm</p>
-                       <p>SD: ${temp.lengthsd} mm</p>
-                       <p>SE: ${temp.lengthse} mm</p>`
+                       <p>Mean: ${temp.lengthmean.toFixed(2)} mm</p>
+                       <p>SD: ${temp.lengthsd.toFixed(2)} mm</p>
+                       <p>SE: ${temp.lengthse.toFixed(2)} mm</p>`
 
         var allData = `<div id="dataSummary">
                         ${generateTable(data.data['1'].val)}
                         ${summary}
                        </div>`;
 
-        $('#views').append(allData);
+        
+
+        $('#data').html(allData);
       },
     });
   }
@@ -497,7 +566,7 @@
     data.forEach(function(box) {
       rows += `<tr>
                 <td>${box['0']}</td>
-                <td>${box['1']}</td>
+                <td>${box['1'].toFixed(2)}</td>
               </tr>`;
     });
 
