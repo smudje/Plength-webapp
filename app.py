@@ -112,3 +112,6 @@ def getMerge():
 @app.route('/pollProgress', methods=['GET', 'POST'])
 def pollProgress():
   return jsonify(progress=prcsr.getProgress())
+
+if __name__ == "__main__":
+  app.run()
