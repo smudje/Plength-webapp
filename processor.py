@@ -297,8 +297,8 @@ class Processor:
             all_results.append(temp_results)
             
             # Progress bar :) (look at terminal)
-            #print('#'*(int(cc/progress*30)-int((cc-1)/progress*30)), end='')
-            #stdout.flush()
+            print('#'*(int(cc/progress*30)-int((cc-1)/progress*30)), end='')
+            stdout.flush()
 
             self.progress = (cc/progress)*100
         
