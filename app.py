@@ -26,6 +26,8 @@ prcsr = Processor()
 
 @app.route('/')
 def hello_world():
+  if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs("./uploads")
   return render_template('base.html')
 
 def allowed_file(filename):
