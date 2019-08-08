@@ -14,12 +14,17 @@ import random
 import string
 from processor import Processor
 import threading
+import logging
+import json
+
 
 app = Flask(__name__)
 app.secret_key = 'Plength'
 app.debug = True
 UPLOAD_FOLDER = './uploads/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'bmp'])
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 filename = ''
 prcsr = Processor()
@@ -59,7 +64,7 @@ def upload_file():
       side = "left"
     else:
       side = "right"
- 
+
     result, data = analyze(fullpath, filename, plantType, side, minDist, dist)
     if (result == True):
       sendfile = UPLOAD_FOLDER + "F_" + filename + ".png"
@@ -81,7 +86,15 @@ def analyze(path, filename, plantType, side, minDist, dist):
 
 @app.route('/getData', methods=['GET', 'POST'])
 def getData():
-  return jsonify(data=prcsr.getData())
+  jsonData,textData = prcsr.getData()
+  responseData = json.dumps({'raw': textData}, allow_nan=False)
+  response = app.response_class(
+      response=responseData,
+      status=200,
+      mimetype='application/json'
+  )
+  #return jsonify(data=jsonData, raw=textData)
+  return response
 
 @app.route('/getSelect', methods=['GET', 'POST'])
 def getSelect():
@@ -90,6 +103,28 @@ def getSelect():
   else:
     prcsr.selectRegions(request.form['regions'])
     return jsonify(success=True)
+
+@app.route('/getGroup', methods=['GET', 'POST'])
+def getGroups():
+  if request.data is None:
+    return None
+  else:
+    #prcsr.setData(request.form['results'])
+    prcsr.groupRegions()
+    return jsonify(success=True)
+
+@app.route('/getApply', methods=['GET', 'POST'])
+def getApply():
+    if request.data is None:
+      return None
+    else:
+      inData = request.form['results']
+      print("=== in Data ====\n")
+      print(inData)
+      print("================\n")
+      prcsr.setData(inData)
+      prcsr.applyGroups()
+      return jsonify(success=True)
 
 @app.route('/getRemove', methods=['GET', 'POST'])
 def getRemove():
@@ -110,3 +145,8 @@ def getMerge():
 @app.route('/pollProgress', methods=['GET', 'POST'])
 def pollProgress():
   return jsonify(progress=prcsr.getProgress())
+
+@app.route('/test', methods=['GET', 'POST'])
+def test():
+  with open("uploads\\4Z1728.json", "r") as data:
+      return jsonify(data=data.read())

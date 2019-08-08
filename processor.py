@@ -39,7 +39,7 @@ class Processor:
         
         self.side = "left"
         
-        self.plant = "coleoptile"
+        self.plant = "seedling"
 
         self.progress = 0
         
@@ -60,6 +60,8 @@ class Processor:
         self.side = side
         self.c_entry = c_entry
         self.min_area = min_area
+        self.progress = 0
+
 
         '''Does image analysis on the file and outputs the lengths'''
 
@@ -78,6 +80,7 @@ class Processor:
             lower_thres = np.array([self.hue_lower, self.sat_lower, self.val_lower])
             upper_thres = np.array([self.hue_upper, self.sat_upper, self.val_upper])
             mask = cv2.inRange(blur, lower_thres, upper_thres)
+            print("seedling!")
 
         # Noise removal with opening and closing
         kernel = np.ones((5,5),np.uint8)
@@ -297,8 +300,8 @@ class Processor:
             all_results.append(temp_results)
             
             # Progress bar :) (look at terminal)
-            #print('#'*(int(cc/progress*30)-int((cc-1)/progress*30)), end='')
-            #stdout.flush()
+            print('#'*(int(cc/progress*30)-int((cc-1)/progress*30)), end='')
+            stdout.flush()
 
             self.progress = (cc/progress)*100
         
@@ -324,7 +327,10 @@ class Processor:
         return self.progress
 
     def getData(self):
-        return self.results
+        return self.results,self.result
+
+    def setData(self, data):
+        self.result = data
         
     def distanceWiki(self, P1, P2, P3):
         '''Returns the distance between point P3 and line containing points P1, P2'''
@@ -566,15 +572,19 @@ class Processor:
     def groupRegions(self):
         '''Allows the user to separate the values into groups'''
         self.grouping = True
-        self.result.config(state='normal')
+        #self.result.config(state='normal')
         
         # Replaces the calibration text with instructions
-        self.result.delete(1.0,2.0)
-        self.result.insert(1.0, "Please enter asterisks between groups:\n")
+        print(self.result)
+        self.result.pop(0)
+        self.result.pop(0)
+        self.result.insert(0, "Please enter asterisks between groups:\n")
         
         # Get text from second line onwards and convert to list
-        all_text = self.result.get(2.0, "end-1c")
-        all_text = all_text.split('\n')
+        all_text = self.result[0:]
+        #all_text = all_text.split('\n')
+        print("===== all text ======\n")
+        print(all_text)
         
         # Remove mean, standard deviation, and standard error lines
         # Get position of the lines
@@ -582,24 +592,35 @@ class Processor:
         for line_no, line in enumerate(all_text):
             if line.startswith('='):
                 pos_list.append(line_no)
+
+        print(pos_list)
         
         # Remove them
-        pos_list.sort(reverse=True)
-        for pos in range(0,len(pos_list),2):
-            self.result.delete("{}.0+2l".format(pos_list[pos+1]),\
-                                "{}.0+3l".format(pos_list[pos]))
+        # pos_list.sort(reverse=True)
+        # for pos in range(0,len(pos_list),2):
+        #     self.result.remove("{}.0+2l".format(pos_list[pos+1]))
+        #     self.result.remove("{}.0+3l".format(pos_list[pos]))
+        if len(pos_list):
+            self.result=self.result[0:pos_list[0]]
         
     def applyGroups(self):
         '''Apply the groups'''
         # Get second line onwards and convert to list
-        all_text = self.result.get(2.0, "end-1c")
+        #all_text = self.result.get(2.0, "end-1c")
+        all_text = self.result[39:len(self.result)-1]
         all_text = all_text.split('#')
+        # temp = []
+        # for element in all_text:
+        #     temp.append(element.replace("#", ""))
+        # all_text = temp
         
         #  Initialization
         self.results = {}
         all_results, temp = [], []
         group_no = 1
         
+        print("===all_text===\n")
+        print(all_text)
         # First one will be empty from the splitting
         for element in all_text[1:]:
             
@@ -612,7 +633,7 @@ class Processor:
                     all_results = []
                     
                 continue
-            
+
             index, values = element.split(',')
             
             # Found a new group
@@ -643,8 +664,11 @@ class Processor:
         
         # Update results
         self.calcStatistics()
-        self.result.delete(1.0,2.0)
-        self.result.insert(1.0,self.firstline)
+        #self.result.delete(1.0,2.0)
+        #self.result.pop(0)
+        #self.result.pop(1)
+        #self.result.insert(1.0,self.firstline)
+        #self.result.insert(0,self.firstline)
         self.showText()
         
         self.grouping = False
@@ -705,6 +729,9 @@ class Processor:
         '''Displays the results in a nice fashion'''
         #self.result.config(state="normal")
         #self.result.delete(2.0, END)
+
+        self.result = []
+        self.result.insert(0,self.firstline)
         
         for group_no in sorted(self.results.keys()):
             group = self.results[group_no]
