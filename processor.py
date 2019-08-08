@@ -10,7 +10,7 @@ import sknw
 import networkx as nx
 from sys import stdout
 
-from PIL import Image, ImageTk
+#from PIL import Image, ImageTk
 
 from skimage.morphology import skeletonize
 from scipy import stats
@@ -864,7 +864,7 @@ class Processor:
         # Show the image
         b,g,r = cv2.split(tempImg)
         tempImg = cv2.merge((r,g,b))
-        tempImg = Image.fromarray(tempImg)
+        #tempImg = Image.fromarray(tempImg)
         self.showImg(tempImg)
     
     def cropImgEnd(self):
@@ -897,7 +897,7 @@ class Processor:
         # Show new image
         b,g,r = cv2.split(self.img)
         temp = cv2.merge((r,g,b))
-        temp = Image.fromarray(temp)
+        #temp = Image.fromarray(temp)
         self.showImg(temp)
         
         # Now analysis can begin!
@@ -974,7 +974,7 @@ class Processor:
         
         # Show the image
         tempImg2 = cv2.cvtColor(res, cv2.COLOR_HSV2RGB)
-        tempImg2 = Image.fromarray(tempImg2)
+        #tempImg2 = Image.fromarray(tempImg2)
         self.showImg(tempImg2)
         
     def thresholdDefault(self):
@@ -1013,7 +1013,7 @@ class Processor:
         # Show original image
         b,g,r = cv2.split(self.img)
         temp = cv2.merge((r,g,b))
-        temp = Image.fromarray(temp)
+        #temp = Image.fromarray(temp)
         self.showImg(temp)
         
         # Analysis can begin

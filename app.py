@@ -31,6 +31,8 @@ prcsr = Processor()
 
 @app.route('/')
 def hello_world():
+  if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs("./uploads")
   return render_template('base.html')
 
 def allowed_file(filename):
@@ -146,7 +148,5 @@ def getMerge():
 def pollProgress():
   return jsonify(progress=prcsr.getProgress())
 
-@app.route('/test', methods=['GET', 'POST'])
-def test():
-  with open("uploads\\4Z1728.json", "r") as data:
-      return jsonify(data=data.read())
+if __name__ == "__main__":
+  app.run()
