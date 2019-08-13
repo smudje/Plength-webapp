@@ -42,6 +42,7 @@ class Processor:
         self.plant = "seedling"
 
         self.progress = 0
+        self.grouping = False
         
     def setfile(self, filepath, filename):
         '''Opens file dialog, gets the file directory, and shows the image'''
@@ -80,7 +81,6 @@ class Processor:
             lower_thres = np.array([self.hue_lower, self.sat_lower, self.val_lower])
             upper_thres = np.array([self.hue_upper, self.sat_upper, self.val_upper])
             mask = cv2.inRange(blur, lower_thres, upper_thres)
-            print("seedling!")
 
         # Noise removal with opening and closing
         kernel = np.ones((5,5),np.uint8)
@@ -304,8 +304,6 @@ class Processor:
             stdout.flush()
 
             self.progress = (cc/progress)*100
-        
-        print()
         
         self.results = {1:{'val':all_results}}          # For grouping
         self.calcStatistics()
@@ -570,22 +568,26 @@ class Processor:
                     
   
     def groupRegions(self):
+        if self.grouping:
+            return
         '''Allows the user to separate the values into groups'''
         self.grouping = True
         #self.result.config(state='normal')
         
         # Replaces the calibration text with instructions
-        print(self.result)
-        self.result.pop(0)
         self.result.pop(0)
         self.result.insert(0, "Please enter asterisks between groups:\n")
         
         # Get text from second line onwards and convert to list
         all_text = self.result[0:]
         #all_text = all_text.split('\n')
-        print("===== all text ======\n")
-        print(all_text)
-        
+        # c = 0
+        # for text in all_text:
+        #     print(c)
+        #     print(text)
+        #     print("\n")
+        #     c += 1
+    
         # Remove mean, standard deviation, and standard error lines
         # Get position of the lines
         pos_list = []
@@ -593,15 +595,23 @@ class Processor:
             if line.startswith('='):
                 pos_list.append(line_no)
 
-        print(pos_list)
         
         # Remove them
         # pos_list.sort(reverse=True)
         # for pos in range(0,len(pos_list),2):
         #     self.result.remove("{}.0+2l".format(pos_list[pos+1]))
         #     self.result.remove("{}.0+3l".format(pos_list[pos]))
-        if len(pos_list):
-            self.result=self.result[0:pos_list[0]]
+        c = 1
+        for i in range(0, len(pos_list), 2):
+            del self.result[pos_list[i]: (pos_list[i+1]+1)]
+            if (i+2 != len(pos_list)):
+                pos_list[i+2] -= (5*c)
+                pos_list[i+3] -= (5*c)
+            c += 1
+            
+    
+        # if len(pos_list):
+        #     self.result=self.result[0:pos_list[0]]
         
     def applyGroups(self):
         '''Apply the groups'''
@@ -619,8 +629,6 @@ class Processor:
         all_results, temp = [], []
         group_no = 1
         
-        print("===all_text===\n")
-        print(all_text)
         # First one will be empty from the splitting
         for element in all_text[1:]:
             

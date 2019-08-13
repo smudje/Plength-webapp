@@ -27,10 +27,12 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 filename = ''
-prcsr = Processor()
+prcsr = None
 
 @app.route('/')
 def hello_world():
+  global prcsr
+  prcsr = Processor()
   if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs("./uploads")
   return render_template('base.html')
@@ -70,10 +72,10 @@ def upload_file():
     result, data = analyze(fullpath, filename, plantType, side, minDist, dist)
     if (result == True):
       sendfile = UPLOAD_FOLDER + "F_" + filename + ".png"
-      #return send_file(sendfile, mimetype='image/png')
       with open(sendfile, "rb") as image_file:
         image_base64 = base64.b64encode(image_file.read())
-      
+
+      os.remove(sendfile)
       return image_base64
     else:
       return "Error"
