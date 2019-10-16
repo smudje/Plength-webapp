@@ -64,8 +64,9 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="https://www.ugent.be/globalcampus/en/research/plant"  target="_blank">Lab of Plant Growth Analysis</a>
-      </div>   
+        <a class="navbar-brand" href="https://www.ugent.be/globalcampus/en/research/plant" target="_blank">Lab of Plant
+          Growth Analysis</a>
+      </div>
       <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav navbar-right">
           <li><a href="#about">ABOUT</a></li>
@@ -188,25 +189,32 @@
       <div class="row">
         <div class="col-md-6">
           <textarea id="resultsText" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-          style="width:100%;height:200px; font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;"
-          >
+            style="width:100%;height:200px; font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;">
           </textarea>
         </div>
       </div>
       <div class="row">
         <div class="col-md-6" id="modifier">
-          <div class="row">
+          <div class="row" style="margin-bottom: 10px;s">
             <div class="col-md-6"><input type="text" id="update"></div>
-            <div class="col-md-6">
+            <div class="col-md-6 text-right">
               <input type="button" value="Select" onclick="getSelect()">
               <input type="button" value="Merge" onclick="getMerge()">
               <input type="button" value="Remove" onclick="getRemove()">
-              <input type="button" value="Group" onclick="getGroup()">
-              <input type="button" value="Apply" onclick="getApply()">
             </div>
           </div>
         </div>
-    </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3 text-left">
+              <input type="button" value="Save Image" onclick="saveImage()">
+              <input type="button" value="Export CSV" onclick="getCSV()">
+        </div>
+        <div class="col-md-3 text-right">
+              <input type="button" value="Group" onclick="getGroup()">
+              <input type="button" value="Apply" onclick="getApply()">
+        </div>
+      </div>
     </div>
     <div class="row" style="padding-top: 10px;">
       <div class="col-md-12">
@@ -440,12 +448,12 @@
       $.ajax({
         url: "/uploadImage",
         type: "POST",
-        data : {
-             plantType : plantType,
-             calPos: calPos,
-             distance: dist,
-             minimumDist: minDist,
-             image: outputImage
+        data: {
+          plantType: plantType,
+          calPos: calPos,
+          distance: dist,
+          minimumDist: minDist,
+          image: outputImage
         },
         //contentType: "application/json",
         //dataType: "json",
@@ -460,10 +468,10 @@
           }
 
           clearInterval(progress);
-          
+
           $("#progress").hide();
           $("#progress").val(0);
-          
+
           $('html, body').animate({
             scrollTop: $("#analysis").offset().top
           }, 2000);
@@ -499,7 +507,7 @@
     $.ajax({
       url: "/getSelect",
       type: "POST",
-      data : {
+      data: {
         regions: regions
       },
       success: function (data) {
@@ -516,7 +524,7 @@
     $.ajax({
       url: "/getRemove",
       type: "POST",
-      data : {
+      data: {
         regions: regions
       },
       success: function (data) {
@@ -533,7 +541,7 @@
     $.ajax({
       url: "/getMerge",
       type: "POST",
-      data : {
+      data: {
         regions: regions
       },
       success: function (data) {
@@ -550,7 +558,7 @@
     $.ajax({
       url: "/getGroup",
       type: "POST",
-      data : {
+      data: {
         results: results
       },
       success: function (data) {
@@ -567,7 +575,7 @@
     $.ajax({
       url: "/getApply",
       type: "POST",
-      data : {
+      data: {
         results: results
       },
       success: function (data) {
@@ -586,12 +594,12 @@
       contentType: "application/json",
       success: function (data) {
         /* var temp = data.data['1']; */
-        
+
         var results = data.raw;
 
         var resultsText = '';
 
-        results.forEach(function(row) {
+        results.forEach(function (row) {
           resultsText += row;
         });
 
@@ -611,7 +619,7 @@
       },
     });
 
-    
+
   }
 
   function generateTable(data) {
@@ -622,7 +630,7 @@
                     </tr>`;
 
     var rows = '';
-    data.forEach(function(box) {
+    data.forEach(function (box) {
       rows += `<tr>
                 <td>${box['0']}</td>
                 <td>${box['1'].toFixed(2)}</td>
@@ -639,15 +647,46 @@
       'url': "/test",
       'method': "GET",
       'contentType': 'application/json'
-    }).done( function(data) {
+    }).done(function (data) {
       console.log(data.data[0]);
-      $('#lengths').dataTable( {
+      $('#lengths').dataTable({
         "aaData": data.val,
         "columns": [
-            { "data": "0" },
-            { "data": "1" }
+          { "data": "0" },
+          { "data": "1" }
         ]
       });
-    })    
+    })
+  }
+
+  function getCSV() {
+    $.ajax({
+      'url': "/getCSV",
+      'method': "GET",
+    }).done(function (data) {
+      console.log(data);
+
+      var file = new Blob([data]);
+      if (window.navigator.msSaveOrOpenBlob) // IE10+
+          window.navigator.msSaveOrOpenBlob(file, filename);
+      else { // Others
+          var a = document.createElement("a"),
+                  url = URL.createObjectURL(file);
+          a.href = url;
+          a.download = "data.csv";
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(function() {
+              document.body.removeChild(a);
+              window.URL.revokeObjectURL(url);  
+          }, 0); 
+      }
+    })
+  }
+
+  function saveImage() {
+    var img = canvas.toDataURL("image/jpeg", 0.7);
+    var newWindow = window.open();
+    newWindow.document.write('<img src="'+img+'"/>');
   }
 </script>

@@ -5,7 +5,7 @@ from flask import (
   flash,
   request,
   jsonify,
-  send_file
+  send_from_directory
 )
 from werkzeug.utils import secure_filename
 import base64
@@ -72,10 +72,17 @@ def upload_file():
     result, data = analyze(fullpath, filename, plantType, side, minDist, dist)
     if (result == True):
       sendfile = UPLOAD_FOLDER + "F_" + filename + ".png"
+      orifile = UPLOAD_FOLDER + filename + ".png"
       with open(sendfile, "rb") as image_file:
         image_base64 = base64.b64encode(image_file.read())
 
-      os.remove(sendfile)
+      try:
+        os.remove(sendfile)
+        os.remove(orifile)
+      except OSError as e:
+          print ("Failed with:", e.strerror)
+          print ("Error code:", e.code)       
+          
       return image_base64
     else:
       return "Error"
@@ -87,6 +94,24 @@ def analyze(path, filename, plantType, side, minDist, dist):
   prcsr.setfile(path, filename)
   result = prcsr.analyze(plantType, side, dist  , minDist)
   return result
+
+@app.route('/getCSV', methods=['GET', 'POST'])
+def getCSV():
+  result = prcsr.exportFile()
+  if (result != ""):
+    response = send_from_directory(directory=UPLOAD_FOLDER, filename=result)
+    response.headers['plenght-xhr'] = 'xhr-ack'
+
+    try:
+      os.remove(UPLOAD_FOLDER + result)
+    except OSError as e:
+        print ("Failed with:", e.strerror)
+        print ("Error code:", e.code) 
+
+    return response
+  else:
+    return "Error"
+
 
 @app.route('/getData', methods=['GET', 'POST'])
 def getData():

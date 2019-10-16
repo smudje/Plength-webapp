@@ -1031,11 +1031,12 @@ class Processor:
         '''Exports the results in a .csv file'''
         
         # Get file path, name, and extention
-        head,tail = path.split(self.filepath)
-        name = tail.split('.')[0]
+        # f,tail = path.split(self.filepath)
+        # name = tail.split('.')[0]
     
         # Write the .csv file in the same directory as the image
-        file = open("{}/{}.csv".format(head,name), 'w')
+        # file = open("{}/{}.csv".format(head,name), 'w')
+        file = open("uploads/{}.csv".format(self.filename), 'w')
         
         # Maximum no. of parameters found in all groups
         max_len = max([max([len(plant) for plant in self.results[i]['val']])\
@@ -1118,7 +1119,7 @@ class Processor:
                 
                 print(temp_str, file=file)
                 
-        self.exported.set("File has been exported as {}.csv".format(name))
+        return "{}.csv".format(self.filename)
                     
     def exportImg(self):
         '''Exports the labeled image'''
