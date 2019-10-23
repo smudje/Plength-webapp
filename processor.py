@@ -1119,6 +1119,7 @@ class Processor:
                 
                 print(temp_str, file=file)
                 
+        file.close()
         return "{}.csv".format(self.filename)
                     
     def exportImg(self):
