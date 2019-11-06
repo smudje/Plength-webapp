@@ -100,14 +100,13 @@ def getCSV():
   result = prcsr.exportFile()
   if (result != ""):
     response = send_from_directory(directory=UPLOAD_FOLDER, filename=result)
-    response.headers['plenght-xhr'] = 'xhr-ack'
+    response.headers['plength-xhr'] = 'xhr-ack'
 
-    try:
-      os.remove(UPLOAD_FOLDER + result)
-    except OSError as e:
-        print ("Failed with:", e.strerror)
-        print ("Error code:", e.code) 
-
+    # try:
+    #   os.remove(UPLOAD_FOLDER + result)
+    # except OSError as e:
+    #     print ("Failed with:", e.strerror)
+        
     return response
   else:
     return "Error"
