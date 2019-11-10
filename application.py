@@ -18,9 +18,9 @@ import logging
 import json
 
 
-app = Flask(__name__)
-app.secret_key = 'Plength'
-app.debug = True
+application = Flask(__name__)
+application.secret_key = 'Plength'
+application.debug = True
 UPLOAD_FOLDER = './uploads/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'bmp'])
 log = logging.getLogger('werkzeug')
@@ -116,7 +116,7 @@ def getCSV():
 def getData():
   jsonData,textData = prcsr.getData()
   responseData = json.dumps({'raw': textData}, allow_nan=False)
-  response = app.response_class(
+  response = application.response_class(
       response=responseData,
       status=200,
       mimetype='application/json'
@@ -175,4 +175,4 @@ def pollProgress():
   return jsonify(progress=prcsr.getProgress())
 
 if __name__ == "__main__":
-  app.run()
+  application.run()
