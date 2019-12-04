@@ -32,7 +32,8 @@ prcsr = None
 @application.route('/')
 def hello_world():
   global prcsr
-  prcsr = Processor()
+  if prcsr is None:
+    prcsr = Processor()
   if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs("./uploads")
   return render_template('base.html')
