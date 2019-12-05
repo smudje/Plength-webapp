@@ -437,7 +437,7 @@
     if (canvas != null) {
       var croppedImage = canvas.toDataURL();
       var outputImage = croppedImage.replace(/^data:image\/(png|jpg);base64,/, "");
-      var progress = setInterval(printProgress, 2000);
+      var progress = setInterval(printProgress, 5000);
 
       var plantType = $('input[name=plant]:checked').val();
       var calPos = $('input[name=calPos]:checked').val();
