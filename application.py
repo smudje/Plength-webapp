@@ -17,11 +17,9 @@ import threading
 import logging
 import json
 
-
-application = Flask(__name__)
-application.secret_key = 'Plength'
-application.debug = True
-UPLOAD_FOLDER = './uploads/'
+app = Flask(__name__)
+app.secret_key = 'Plength'
+UPLOAD_FOLDER = 'C:\\Users\\plength\\plength-webapp\\uploads\\'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'bmp'])
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -29,7 +27,7 @@ log.setLevel(logging.ERROR)
 filename = ''
 prcsr = None
 
-@application.route('/')
+@app.route('/')
 def hello_world():
   global prcsr
   if prcsr is None:
@@ -41,7 +39,7 @@ def hello_world():
 def allowed_file(filename):
   return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@application.route('/uploadImage', methods=['GET', 'POST'])
+@app.route('/uploadImage', methods=['GET', 'POST'])
 def upload_file():
   if request.data is None:
     return ''
@@ -86,6 +84,7 @@ def upload_file():
           
       return image_base64
     else:
+      app.logger.info('Error at upload file')
       return "Error"
 
 
@@ -96,7 +95,7 @@ def analyze(path, filename, plantType, side, minDist, dist):
   result = prcsr.analyze(plantType, side, dist  , minDist)
   return result
 
-@application.route('/getCSV', methods=['GET', 'POST'])
+@app.route('/getCSV', methods=['GET', 'POST'])
 def getCSV():
   result = prcsr.exportFile()
   if (result != ""):
@@ -113,19 +112,19 @@ def getCSV():
     return "Error"
 
 
-@application.route('/getData', methods=['GET', 'POST'])
+@app.route('/getData', methods=['GET', 'POST'])
 def getData():
   jsonData,textData = prcsr.getData()
   responseData = json.dumps({'raw': textData}, allow_nan=False)
-  response = application.response_class(
+  response = app.response_class(
       response=responseData,
       status=200,
-      mimetype='application/json'
+      mimetype='app/json'
   )
   #return jsonify(data=jsonData, raw=textData)
   return response
 
-@application.route('/getSelect', methods=['GET', 'POST'])
+@app.route('/getSelect', methods=['GET', 'POST'])
 def getSelect():
   if request.data is None:
     return None
@@ -133,7 +132,7 @@ def getSelect():
     prcsr.selectRegions(request.form['regions'])
     return jsonify(success=True)
 
-@application.route('/getGroup', methods=['GET', 'POST'])
+@app.route('/getGroup', methods=['GET', 'POST'])
 def getGroups():
   if request.data is None:
     return None
@@ -142,7 +141,7 @@ def getGroups():
     prcsr.groupRegions()
     return jsonify(success=True)
 
-@application.route('/getApply', methods=['GET', 'POST'])
+@app.route('/getApply', methods=['GET', 'POST'])
 def getApply():
     if request.data is None:
       return None
@@ -155,7 +154,7 @@ def getApply():
       prcsr.applyGroups()
       return jsonify(success=True)
 
-@application.route('/getRemove', methods=['GET', 'POST'])
+@app.route('/getRemove', methods=['GET', 'POST'])
 def getRemove():
   if request.data is None:
     return None
@@ -163,7 +162,7 @@ def getRemove():
     prcsr.removeRegions(request.form['regions'])
     return jsonify(success=True)
    
-@application.route('/getMerge', methods=['GET', 'POST'])
+@app.route('/getMerge', methods=['GET', 'POST'])
 def getMerge():
   if request.data is None:
     return None
@@ -171,9 +170,9 @@ def getMerge():
     prcsr.mergeRegions(request.form['regions'])
     return jsonify(success=True)
    
-@application.route('/pollProgress', methods=['GET', 'POST'])
+@app.route('/pollProgress', methods=['GET', 'POST'])
 def pollProgress():
   return jsonify(progress=prcsr.getProgress())
 
 if __name__ == "__main__":
-  application.run()
+  app.run(host='0.0.0.0', port=80)
