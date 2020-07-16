@@ -11,8 +11,6 @@
   <script src="{{ url_for('static', filename='jquery.color.js') }}"></script>
   <script src="{{ url_for('static', filename='jquery.Jcrop.min.js') }}"></script>
   <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='datatables.js') }}"></script>
-  <script src="{{ url_for('static', filename='datatables.css') }}"></script>
   <style>
     .jumbotron {
       background-color: #072c02f1;
@@ -266,11 +264,13 @@
           <dt>Step V: Click the button to upload and analyze the image</dt>
         </h5>
         <div class="row">
-          <div class="col-md-1">
+          <div class="col-md-2">
             <button onclick="uploadImage()">Upload</button>
           </div>
-          <div class="col-md-3">
-            <progress id="progress" value="0" max="100"></progress>
+          <div class="col-md-10">
+            <div class="spinner-border" role="status" id="progress">
+              <span class="sr-only">Loading...</span>
+            </div>
           </div>
         </div>
       </div>
@@ -287,6 +287,13 @@
       </div>
     </div>
   </div>
+
+  <div id="dialog" title="" style="display: none;">
+    <p>There was an error processing your request. Here are a few things that could've resulted in the error</p>
+    <p>1. Make sure the image is clear, and correct plany type has been selected. If the internal image editor is not enough, please use an external editor to adjust the image contrast.</p>
+    <p>2. Crop the image to smaller partition to see if the settings and image is clear enough. If the error persists, it's likely an programmatic error</p>
+    <p>3. The analysis is a very resource intensive task, so the server could be busy handling other requests. If so, please try again later </p>
+  </div>
 </body>
 
 </html>
@@ -301,6 +308,7 @@
   var hue = 200;
   var sat = 0;
   var lightness = 100;
+  var csvData;
 
   var prefsize;
 
@@ -441,7 +449,7 @@
     if (canvas != null) {
       var croppedImage = canvas.toDataURL();
       var outputImage = croppedImage.replace(/^data:image\/(png|jpg);base64,/, "");
-      var progress = setInterval(printProgress, 5000);
+      /* var progress = setInterval(printProgress, 5000); */
 
       var plantType = $('input[name=plant]:checked').val();
       var calPos = $('input[name=calPos]:checked').val();
@@ -459,22 +467,20 @@
           minimumDist: minDist,
           image: outputImage
         },
-        //contentType: "application/json",
-        //dataType: "json",
-        //cache: false,
-        //processData: false,
+        contentType: "application/json",
         success: function (data) {
           context.clearRect(0, 0, canvas.width, canvas.height);
           var img = new Image();
-          img.src = "data:image/png;base64," + data;
+          img.src = "data:image/png;base64," + data.image;
           img.onload = function () {
             context.drawImage(img, 0, 0);
           }
+          csvData = data.csvfile;
 
-          clearInterval(progress);
+          /* clearInterval(progress); */
 
           $("#progress").hide();
-          $("#progress").val(0);
+          /* $("#progress").val(0); */
 
           $('html, body').animate({
             scrollTop: $("#analysis").offset().top
@@ -483,6 +489,7 @@
           getData();
         },
         error: function (data) {
+          showAlert();
           console.log('Error: ' + data);
         },
         complete: function (data) { }
@@ -664,7 +671,7 @@
   }
 
   function getCSV() {
-    $.ajax({
+    /* $.ajax({
       'url': "/getCSV",
       'method': "GET",
     }).done(function (data) {
@@ -685,12 +692,44 @@
               window.URL.revokeObjectURL(url);  
           }, 0); 
       }
-    })
+    }) */
+
+    $.ajax({
+      url: "/getCSV",
+      type: "POST",
+      data: {
+        filename: csvData
+      },
+      success: function (data) {
+        var file = new Blob([data]);
+        if (window.navigator.msSaveOrOpenBlob) // IE10+
+            window.navigator.msSaveOrOpenBlob(file, filename);
+        else { // Others
+            var a = document.createElement("a"),
+                    url = URL.createObjectURL(file);
+            a.href = url;
+            a.download = "data.csv";
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(function() {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);  
+            }, 0); 
+        }
+      },
+      error: function (error) {
+
+      }
+    });
   }
 
   function saveImage() {
     var img = canvas.toDataURL("image/jpeg", 0.7);
     var newWindow = window.open();
     newWindow.document.write('<img src="'+img+'"/>');
+  }
+
+  function showAlert(){
+    $( "#dialog" ).dialog({modal: true});
   }
 </script>

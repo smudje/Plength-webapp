@@ -72,6 +72,7 @@ def upload_file():
     if (result == True):
       sendfile = UPLOAD_FOLDER + "F_" + filename + ".png"
       orifile = UPLOAD_FOLDER + filename + ".png"
+      csvfile = prcsr.exportFile()
       with open(sendfile, "rb") as image_file:
         image_base64 = base64.b64encode(image_file.read())
 
@@ -82,7 +83,11 @@ def upload_file():
           print ("Failed with:", e.strerror)
           print ("Error code:", e.code)       
           
-      return image_base64
+      # return image_base64
+      return jsonify(
+        image=image_base64,
+        csv=csvfile
+      )
     else:
       app.logger.info('Error at upload file')
       return "Error"
@@ -97,10 +102,10 @@ def analyze(path, filename, plantType, side, minDist, dist):
 
 @app.route('/getCSV', methods=['GET', 'POST'])
 def getCSV():
-  result = prcsr.exportFile()
-  if (result != ""):
-    response = send_from_directory(directory=UPLOAD_FOLDER, filename=result)
-    response.headers['plength-xhr'] = 'xhr-ack'
+  if request.data is None:
+    return None
+  response = send_from_directory(directory=UPLOAD_FOLDER, filename=request.form['filename'])
+  response.headers['plength-xhr'] = 'xhr-ack'
 
     # try:
     #   os.remove(UPLOAD_FOLDER + result)
