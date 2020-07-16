@@ -19,7 +19,7 @@ import json
 
 app = Flask(__name__)
 app.secret_key = 'Plength'
-UPLOAD_FOLDER = 'C:\\Users\\plength\\plength-webapp\\uploads\\'
+UPLOAD_FOLDER = './uploads/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'bmp'])
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -27,13 +27,15 @@ log.setLevel(logging.ERROR)
 filename = ''
 prcsr = None
 
+if not os.path.isdir(UPLOAD_FOLDER):
+    os.makedirs("./uploads")
+
 @app.route('/')
 def hello_world():
   global prcsr
   if prcsr is None:
     prcsr = Processor()
-  if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs("./uploads")
+  
   return render_template('base.html')
 
 def allowed_file(filename):
@@ -44,15 +46,16 @@ def upload_file():
   if request.data is None:
     return ''
   else:
-    filename = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-    fullpath = UPLOAD_FOLDER + filename + ".png"
+    # filename = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
     
     image = request.form['image'].encode()
     calPos = request.form['calPos']
     dist = int(request.form['distance'])
     minDist = int(request.form['minimumDist'])
     plantType = request.form['plantType']
+    filename = request.form['filename']
 
+    fullpath = UPLOAD_FOLDER + filename + ".png"
     print(plantType)
 
     with open(fullpath, "wb") as fh:
@@ -83,11 +86,7 @@ def upload_file():
           print ("Failed with:", e.strerror)
           print ("Error code:", e.code)       
           
-      # return image_base64
-      return jsonify(
-        image=image_base64,
-        csv=csvfile
-      )
+      return image_base64
     else:
       app.logger.info('Error at upload file')
       return "Error"
@@ -104,7 +103,7 @@ def analyze(path, filename, plantType, side, minDist, dist):
 def getCSV():
   if request.data is None:
     return None
-  response = send_from_directory(directory=UPLOAD_FOLDER, filename=request.form['filename'])
+  response = send_from_directory(directory=UPLOAD_FOLDER, filename=request.form['filename']+'.csv')
   response.headers['plength-xhr'] = 'xhr-ack'
 
     # try:

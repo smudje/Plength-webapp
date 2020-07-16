@@ -267,9 +267,9 @@
           <div class="col-md-2">
             <button onclick="uploadImage()">Upload</button>
           </div>
-          <div class="col-md-10">
-            <div class="spinner-border" role="status" id="progress">
-              <span class="sr-only">Loading...</span>
+          <div class="col-md-8">
+            <div id="progress">
+              <p>Analyzing...</p>
             </div>
           </div>
         </div>
@@ -288,7 +288,7 @@
     </div>
   </div>
 
-  <div id="dialog" title="" style="display: none;">
+  <div id="dialog" title="Error" style="display: none;">
     <p>There was an error processing your request. Here are a few things that could've resulted in the error</p>
     <p>1. Make sure the image is clear, and correct plany type has been selected. If the internal image editor is not enough, please use an external editor to adjust the image contrast.</p>
     <p>2. Crop the image to smaller partition to see if the settings and image is clear enough. If the error persists, it's likely an programmatic error</p>
@@ -455,6 +455,7 @@
       var calPos = $('input[name=calPos]:checked').val();
       var dist = $('#dist').val();
       var minDist = $('#minDist').val();
+      csvData = makeid();
 
       $("#progress").show();
       $.ajax({
@@ -465,17 +466,17 @@
           calPos: calPos,
           distance: dist,
           minimumDist: minDist,
-          image: outputImage
+          image: outputImage,
+          filename: csvData,
         },
-        contentType: "application/json",
+        /* contentType: "application/json", */
         success: function (data) {
           context.clearRect(0, 0, canvas.width, canvas.height);
           var img = new Image();
-          img.src = "data:image/png;base64," + data.image;
+          img.src = "data:image/png;base64," + data;
           img.onload = function () {
             context.drawImage(img, 0, 0);
           }
-          csvData = data.csvfile;
 
           /* clearInterval(progress); */
 
@@ -489,10 +490,12 @@
           getData();
         },
         error: function (data) {
-          showAlert();
+          alert(`There was an error processing your request. Here are a few things that could've resulted in the error.
+                1. Make sure the image is clear, and correct plany type has been selected. If the internal image editor is not enough, please use an external editor to adjust the image contrast.
+                2. Crop the image to smaller partition to see if the settings and image is clear enough. If the error persists, it's likely an programmatic error
+                3. The analysis is a very resource intensive task, so the server could be busy handling other requests. If so, please try again later`);
           console.log('Error: ' + data);
         },
-        complete: function (data) { }
       });
     }
   }
@@ -696,7 +699,7 @@
 
     $.ajax({
       url: "/getCSV",
-      type: "POST",
+      method: "POST",
       data: {
         filename: csvData
       },
@@ -729,7 +732,17 @@
     newWindow.document.write('<img src="'+img+'"/>');
   }
 
-  function showAlert(){
-    $( "#dialog" ).dialog({modal: true});
-  }
+  /* function showAlert(){
+    alert("Error");
+  } */
+
+  function makeid() {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = 5;
+    for ( var i = 0; i < 5; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result.toUpperCase();
+}
 </script>
