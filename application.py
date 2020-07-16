@@ -113,8 +113,6 @@ def getCSV():
     #     print ("Failed with:", e.strerror)
         
   return response
-  else:
-    return "Error"
 
 
 @app.route('/getData', methods=['GET', 'POST'])
