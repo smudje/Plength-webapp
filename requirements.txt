@@ -10,7 +10,7 @@ llvmlite==0.27.0
 MarkupSafe==1.1.1
 networkx==2.2
 numba==0.42.0
-numpy==1.16.2
+numpy==1.22.0
 opencv-python==3.4.4.19
 Pillow==5.4.1
 PyWavelets==1.0.2
